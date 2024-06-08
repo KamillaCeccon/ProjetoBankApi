@@ -1,5 +1,6 @@
 package com.bank.api.service;
 
+import com.bank.api.exception.AccountNotFound;
 import com.bank.api.model.Account;
 import com.bank.api.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,16 +13,20 @@ public class AccountServiceImpl implements AccountService {
     @Autowired
     private AccountRepository accountRepository;
 
-    public Account deposit(Long destination, Double amount) {
+    public Account deposit(Long destination, Double amount, boolean createNewAccount) {
         Account account;
         Optional<Account> existingAccount = accountRepository.findById(destination);
         if (existingAccount.isPresent()) {
             account = existingAccount.get();
             account.setBalance(account.getBalance() + amount);
         } else {
-            account = new Account();
-            account.setAccountId(destination);
-            account.setBalance(amount);
+            if (createNewAccount) {
+                account = new Account();
+                account.setAccountId(destination);
+                account.setBalance(amount);
+            } else {
+                throw new AccountNotFound("Conta não encontrada");
+            }
         }
         return accountRepository.save(account);
     }
@@ -35,14 +40,18 @@ public class AccountServiceImpl implements AccountService {
             account.setBalance(account.getBalance() - amount);
             return accountRepository.save(account);
         } else {
-            //lançar um erro.
+            throw new AccountNotFound("Conta não encontrada");
         }
 
-        return null;
     }
 
     @Override
     public Optional<Account> getAccount(Long accountId) {
         return accountRepository.findById(accountId);
+    }
+
+    @Override
+    public void deleteAllAccounts() {
+        accountRepository.deleteAll();
     }
 }

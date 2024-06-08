@@ -29,7 +29,7 @@ public class EventServiceImpl implements EventService {
         Long origin = eventRequestDto.getOrigin() == null ? null : Long.parseLong(eventRequestDto.getOrigin());
         switch (eventType) {
             case "deposit":
-                Account deposit = accountService.deposit(destination, eventRequestDto.getAmount());
+                Account deposit = accountService.deposit(destination, eventRequestDto.getAmount(), true);
                 destinationDto = new DestinationDto();
                 destinationDto.setId(eventRequestDto.getDestination());
                 destinationDto.setBalance(deposit.getBalance().intValue());
@@ -59,7 +59,7 @@ public class EventServiceImpl implements EventService {
         Long destinationLong = destination == null ? null : Long.parseLong(destination);
         Long originLong = origin == null ? null : Long.parseLong(origin);
         Account withdraw = accountService.withdraw(originLong, amount);
-        Account deposit = accountService.deposit(destinationLong, amount);
+        Account deposit = accountService.deposit(destinationLong, amount, true);
         originDto.setBalance(withdraw.getBalance().intValue());
         destinationDto.setBalance(deposit.getBalance().intValue());
 

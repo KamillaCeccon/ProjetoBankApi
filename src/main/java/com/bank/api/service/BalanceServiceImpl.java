@@ -1,5 +1,6 @@
 package com.bank.api.service;
 
+import com.bank.api.exception.AccountNotFound;
 import com.bank.api.model.Account;
 import com.bank.api.repository.AccountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,10 @@ public class BalanceServiceImpl implements BalanceService {
         Optional<Account> account = accountService.getAccount(accountId);
         if (account.isPresent()) {
             return account.get().getBalance();
+        }else{
+            throw new AccountNotFound("Conta não encontrada");
         }
-        return null;
+
 
     }
 }
